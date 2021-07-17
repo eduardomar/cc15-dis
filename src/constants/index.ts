@@ -1,7 +1,8 @@
-export * as agencyCodes from './AgencyCodes';
-export * as actionCodes from './ActionCodes';
-export * as packageCategories from './PackageCategories';
-export * as transactionCategories from './TransactionCategories';
-export * as cbpRequestTypes from './CBPRequestTypes';
-export * as invoiceTypes from './InvoiceTypes';
-export * as tradePartyTypes from './TradePartyTypes';
+export { default as messageTypes } from './MessageTypes';
+export { default as agencyCodes } from './AgencyCodes';
+export { default as actionCodes } from './ActionCodes';
+export { default as packageCategories } from './PackageCategories';
+export { default as transactionCategories } from './TransactionCategories';
+export { default as cbpRequestTypes } from './CBPRequestTypes';
+export { default as invoiceTypes } from './InvoiceTypes';
+export { default as tradePartyTypes } from './TradePartyTypes';
