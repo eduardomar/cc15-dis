@@ -6,3 +6,4 @@ export { default as transactionCategories } from './TransactionCategories';
 export { default as cbpRequestTypes } from './CBPRequestTypes';
 export { default as invoiceTypes } from './InvoiceTypes';
 export { default as tradePartyTypes } from './TradePartyTypes';
+export { default as docPreviouslySubmitted } from './DocPreviouslySubmitted';

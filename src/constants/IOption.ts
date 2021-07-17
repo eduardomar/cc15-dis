@@ -1,6 +1,6 @@
 interface IOption {
-  value: string;
-  label?: string;
+  value: string | null;
+  label?: string | null;
 }
 
 export default IOption;
