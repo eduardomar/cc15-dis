@@ -1,21 +1,25 @@
 import fs from 'fs';
 import path from 'path';
-import prettier from 'prettier';
 import readConfigPrettier from './readConfigPrettier';
-import IOption from './constants/IOption';
 import {
   messageTypes,
   actionCodes,
   packageCategories,
   transactionCategories,
   cbpRequestTypes,
+  docPreviouslySubmitted,
+  agencyCodes,
   invoiceTypes,
   tradePartyTypes,
-  docPreviouslySubmitted,
 } from './constants/index';
-import message from './message';
+import stringify from './utils/stringify';
+import { IOutput } from './utils/interfaces';
+import { write } from './utils/files';
 
-const toValue = (option: IOption): string | null => option.value;
+const normalizeArray = (opts: IOutput[]) =>
+  `module.exports = {${opts
+    .map((opt) => `${opt.name}: ${stringify(opt.array, true)}`)
+    .join(',\n')}}`;
 
 export default () => {
   const feathersPath = process.env.FEATHERS || '';
@@ -27,30 +31,25 @@ export default () => {
 
   if (fs.existsSync(feathersPath)) {
     const config = readConfigPrettier(prettierConfigPath);
-    const constants = {
-      messagesTypes: messageTypes.map((option) =>
-        (toValue(option) || '').toLocaleUpperCase(),
-      ),
-      actionCodes: actionCodes.map(toValue),
-      packageCategories: packageCategories.map(toValue),
-      transactionCategories: transactionCategories.map(toValue),
-      cbpRequestTypes: cbpRequestTypes.map(toValue),
-      docPreviouslySubmitted: docPreviouslySubmitted.map(toValue),
-      invoiceTypes: invoiceTypes.map(toValue),
-      tradePartyTypes: tradePartyTypes.map(toValue),
-    };
+    const constants = normalizeArray([
+      {
+        name: 'messagesTypes',
+        array: messageTypes.map((mt) => ({
+          value: (mt.value || '').toLocaleUpperCase(),
+          label: mt.label,
+        })),
+      },
+      { name: 'actionCodes', array: actionCodes },
+      { name: 'packageCategories', array: packageCategories },
+      { name: 'transactionCategories', array: transactionCategories },
+      { name: 'cbpRequestTypes', array: cbpRequestTypes },
+      { name: 'docPreviouslySubmitted', array: docPreviouslySubmitted },
+      { name: 'agencyCodes', array: agencyCodes },
+      { name: 'invoiceTypes', array: invoiceTypes },
+      { name: 'tradePartyTypes', array: tradePartyTypes },
+    ]);
 
-    if (fs.existsSync(outputPath)) {
-      fs.unlinkSync(outputPath);
-    }
-
-    const codePretty = `${message}\n\n${prettier.format(
-      `module.exports=${JSON.stringify(constants)}`,
-      config,
-    )}`;
-
-    // console.debug({ codePretty });
-    fs.writeFileSync(outputPath, codePretty, {});
+    write(outputPath, constants, config);
   } else {
     throw new Error(
       'The path to cc15-client is not configured (.env) or does not exist.',
